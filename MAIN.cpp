@@ -118,7 +118,7 @@ int main()
 			break;
 
 		case 7:
-
+			printf("");
 			break;
 		}
 		system("pause");

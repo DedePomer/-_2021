@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Запись в массив через разделитель.c" />
+    <ClCompile Include="Ответы на вопросы.c" />
     <ClCompile Include="Факториал.c" />
     <ClCompile Include="Линейный Односвязанный список.c" />
     <ClCompile Include="MAIN.cpp" />
