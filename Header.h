@@ -26,3 +26,5 @@ void ShowList(SList*);
 DWORD WINAPI Fact(LPVOID);
 DWORD WINAPI CritSection(LPVOID);
 void LpwstrSpace(LPWSTR);
+DWORD WINAPI WatchSec(LPVOID);
+DWORD WINAPI WatchButtonPressing(LPVOID);

@@ -4,9 +4,11 @@
 // 4 - создание и отладка файла DLL (22) + импорт функций (16) + LpwstrToFloat + FloatToLpwstr + Concat
 // 5 - программа для считывания нескольких числовых значений из строки и из записи в числовой массив (разделитель - пробел) (14)
 // 6 - программа для считывания числового значения из файла (с сохранением его в числовом формате) (15) + программа для считывания и записи строкового значения с использованием текстового файла (16)
+// 7 - разработка программы-секундомера. в одном потоке идет отсчет времени, а в другом осуществляется управление секундомером (20)
 
 #include "Header.h"
 
+int time[3] = { 23,59,58 }; // для секундомера
 
 int sum(int a, int b)
 {
@@ -118,7 +120,11 @@ int main()
 			break;
 
 		case 7:
-			printf("");
+			printf("");	
+			HANDLE Watch[2];
+			Watch[0] = CreateThread(NULL, 0, WatchSec, time, 0, 0);
+			Watch[1] = CreateThread(NULL, 0, WatchButtonPressing, Watch[0], 0, 0);
+			WaitForMultipleObjects(2, Watch, TRUE, INFINITE);
 			break;
 		}
 		system("pause");
@@ -127,14 +133,77 @@ int main()
 	return 0;
 
 }
-
-
-
+// секундомер
+DWORD WINAPI WatchSec(LPVOID param)
+{
+	int h , m , s;
+	while (1)
+	{
+		h = ((int*)param)[0]; m = ((int*)param)[1]; s = ((int*)param)[2];
+		if (s < 60)
+		{
+			s++;
+		}
+		if (s == 60 && m < 60)
+		{
+			m++;
+			s = 0;
+		}
+		if (m == 60 && h < 24)
+		{
+			m = 0;
+			h++;
+		}
+		if (h == 24)
+		{
+			h = 0; m = 0; s = 0;
+		}
+		printf("%02d %02d %02d\n", h, m, s);
+		((int*)param)[0] = h; ((int*)param)[1] = m; ((int*)param)[2] = s;
+		Sleep(1000);
+	}
+	ExitThread(0);
+}
+DWORD WINAPI WatchButtonPressing(LPVOID param)
+{
+	int SecItsStop = 1;
+	while (1)
+	{
+		switch (_getch())
+		{
+		case 113:
+		case 233:
+			if (SecItsStop == 1)
+			{
+				SuspendThread((HANDLE)param);
+				SecItsStop = 0;
+			}
+			else
+			{
+				ResumeThread((HANDLE)param);
+				SecItsStop = 1;
+			}
+			break;
+		case 119:
+			TerminateThread((HANDLE)param, 0);
+			ExitThread(0);
+			break;
+		case 101:
+			time[0] = 0;
+			time[1] = 0;
+			time[2] = 0;
+			system("cls");
+			break;
+		}
+	}
+	ExitThread(0);
+}
+// функция с аргументом указатель на функцию
 int ArgumentFunction(int (*f)(int))
 {
 	return f(2,3);
 }
-
+// критическая секция
 DWORD WINAPI CritSection(LPVOID param)// функция с критической секцией
 {
 	EnterCriticalSection(&section); // 
