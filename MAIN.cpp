@@ -5,6 +5,7 @@
 // 5 - программа для считывания нескольких числовых значений из строки и из записи в числовой массив (разделитель - пробел) (14)
 // 6 - программа для считывания числового значения из файла (с сохранением его в числовом формате) (15) + программа для считывания и записи строкового значения с использованием текстового файла (16)
 // 7 - разработка программы-секундомера. в одном потоке идет отсчет времени, а в другом осуществляется управление секундомером (20)
+// 8 - запись и считывание в регистор числовых данных (2)
 
 #include "Header.h"
 
@@ -16,13 +17,11 @@ int sum(int a, int b)
 }
 
 
-
 CRITICAL_SECTION section = { 0 };// структура для критической секции
 int _const = 0;
 
 int main()
 {
-
 	system("chcp 1251 > null");
 	int n = 0;
 	while (1) 
@@ -125,6 +124,25 @@ int main()
 			Watch[0] = CreateThread(NULL, 0, WatchSec, time, 0, 0);
 			Watch[1] = CreateThread(NULL, 0, WatchButtonPressing, Watch[0], 0, 0);
 			WaitForMultipleObjects(2, Watch, TRUE, INFINITE);
+			break;
+
+		case 8:
+			printf(""); //для  DWORD
+			HKEY hKey;
+			DWORD v = 991, v1;
+			if (RegOpenKeyW(HKEY_CURRENT_USER, L"MyParam", &hKey) != 0)
+			{
+				return 1;
+			}
+			if (!RegSetValueExW(hKey, L"DwordParam", NULL, REG_DWORD, &v, 4))
+			{
+				printf("в реестре создался цифра\n");
+			}
+			DWORD dataType = 0, dataLen = 400;
+			if (RegGetValueW(HKEY_CURRENT_USER, L"MyParam", L"DwordParam", RRF_RT_ANY, &dataType, &v1, &dataLen) == ERROR_SUCCESS)
+			{
+				printf("цифра %d\n", v1);
+			}
 			break;
 		}
 		system("pause");
